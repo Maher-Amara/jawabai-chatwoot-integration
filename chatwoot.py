@@ -74,7 +74,7 @@ class Chatwoot:
         response = requests.post(url, json=payload, headers=headers)
         return response
     
-    def add_article(self, title, content, category_id, status="published"):
+    def add_article(self, title, content, category_id, status="draft"):
         """
         Adds a new article to a portal in Chatwoot.
         
@@ -112,7 +112,6 @@ class Chatwoot:
         payload = {k: v for k, v in payload.items() if v is not None}
 
         response = requests.post(url, json=payload, headers=headers)
-        print(response.json)
         return response
 
     def get_categories(self):
@@ -134,6 +133,37 @@ class Chatwoot:
             categorie_ids[categorie['slug']] = categorie['id']
         return categorie_ids
 
+    def list_articles(self):
+        url = f"{self.base_url}/api/v1/accounts/{self.account_id}/portals/{self.portal_id}/articles"
+
+        headers = {
+            "Content-Type": "application/json; charset=utf-8",
+            "api_access_token": self.api_access_token
+        }
+
+        response = requests.get(url, headers=headers)
+        data = response.json()
+        data= data['payload']
+
+        ids = list()
+        
+        for article in data:
+            ids += [article['id']]
+        return(ids)
+    
+    def publish_article(self, id):
+        url = f"{self.base_url}/api/v1/accounts/{self.account_id}/portals/{self.portal_id}/articles/{id}"
+        headers = {
+            "Content-Type": "application/json; charset=utf-8",
+            "api_access_token": self.api_access_token
+        }
+
+        payload = {
+            "status": 1,
+        }
+
+        response = requests.patch(url, json=payload, headers=headers)
+
 
 def main():
     # Example usage
@@ -153,7 +183,7 @@ def main():
 if __name__ == "__main__":
     chatwoot = Chatwoot()
     
-    result = chatwoot.get_categories()
+    result = chatwoot.list_articles()
     print(result)
 
     #main()

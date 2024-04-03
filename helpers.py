@@ -25,7 +25,7 @@ def create_path(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-def split_and_save_articles(file_path):
+def split_and_save_articles_to_disk(file_path):
     content = read_docx(file_path)
     if content is None:
         return
@@ -69,7 +69,7 @@ def create_categorie_tree(category_tree):
     parent_category = None
     for category in category_tree:
         slug = Chatwoot.sluggify(category)
-        result = chatwoot.add_category(
+        chatwoot.add_category(
             description = category,
             name = category,
             slug= slug,
@@ -86,6 +86,7 @@ def split_and_save_articles(file_path):
     # Splitting the document into articles
     articles = content.split("Chat Path:")
 
+    chatwoot = Chatwoot()
     # Saving each article in a separate file
     for _, article in enumerate(articles[2:]):
         rows =  article.split('\n')
@@ -111,8 +112,16 @@ def split_and_save_articles(file_path):
         article = article.replace("Assistant: ", '', 1)
 
         # create article usingarticle title categorie
-        chatwoot = Chatwoot()
         chatwoot.add_article(title, article, categorie_id)
+
+def publish_all():
+    chatwoot = Chatwoot()
+    article_ids = chatwoot.list_articles()
+    for article_id in article_ids:
+        chatwoot.publish_article(article_id)
+
+
 
 # Replace './docs/mydoc.docx' with the path to your document
 split_and_save_articles('./docs/mydoc.docx')
+publish_all()
