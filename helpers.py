@@ -1,5 +1,7 @@
 import os
 from docx import Document
+from chatwoot import Chatwoot
+
 
 def read_docx(file_path):
     """
@@ -61,6 +63,56 @@ def split_and_save_articles(file_path):
         article_file_name = os.path.join(subdirectory, f'{title}.md')
         with open(article_file_name, 'w', encoding='utf-8') as article_file:
             article_file.write(article.strip())
+
+def create_categorie_tree(category_tree):
+    chatwoot = Chatwoot()
+    parent_category = None
+    for category in category_tree:
+        slug = Chatwoot.sluggify(category)
+        result = chatwoot.add_category(
+            description = category,
+            name = category,
+            slug= slug,
+            parent_category_id=parent_category
+        )
+        parent_category = slug
+    return parent_category
+
+def split_and_save_articles(file_path):
+    content = read_docx(file_path)
+    if content is None:
+        return
+
+    # Splitting the document into articles
+    articles = content.split("Chat Path:")
+
+    # Saving each article in a separate file
+    for _, article in enumerate(articles[2:]):
+        rows =  article.split('\n')
+
+        category_tree = rows[0]
+        category_tree = category_tree.split(" / ")
+
+        title = category_tree[-1]
+        title = title.replace('/', '\\')
+
+        category_tree = category_tree[:-1]
+        print(category_tree)
+
+        categorie = create_categorie_tree(category_tree)
+
+        # get id from categorie slug
+        categorie_ids = chatwoot.get_categories()
+        categorie_id = categorie_ids[categorie]
+
+        article = '\n'.join(rows[1:])
+
+        # # remove the "Assistant: "word
+        article = article.replace("Assistant: ", '', 1)
+
+        # create article usingarticle title categorie
+        chatwoot = Chatwoot()
+        chatwoot.add_article(title, article, categorie_id)
 
 # Replace './docs/mydoc.docx' with the path to your document
 split_and_save_articles('./docs/mydoc.docx')
