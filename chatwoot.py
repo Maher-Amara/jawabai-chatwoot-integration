@@ -141,14 +141,25 @@ class Chatwoot:
             "api_access_token": self.api_access_token
         }
 
-        response = requests.get(url, headers=headers)
-        data = response.json()
-        data= data['payload']
-
         ids = list()
         
-        for article in data:
-            ids += [article['id']]
+        page = 1
+        params = {"page": page}
+        response = requests.get(url, headers=headers, params=params)
+        data = response.json()
+        data= data['payload']
+        
+        
+        while data:
+            for article in data:
+                ids += [article['id']]
+            
+            page += 1
+            params = {"page": page}
+            response = requests.get(url, headers=headers, params=params)
+            data = response.json()
+            data= data['payload']
+        
         return(ids)
     
     def publish_article(self, id):
