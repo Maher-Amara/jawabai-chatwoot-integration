@@ -1,14 +1,19 @@
 import re
 import requests
 import random
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 class Chatwoot:
     def __init__(self):
-        self.api_access_token = '91gcvUNfiryr6nwUiQcEQxZu'
-        self.account_id = 1
-        self.base_url = "http://192.168.55.10:3001"
+        self.api_access_token = os.environ.get('api_access_token')
+        self.account_id = os.environ.get('account_id')
+        self.base_url = os.environ.get('base_url')
         self.portal_id = 'sidraedge'
-        self.author_id = 1
+        self.author_id = os.environ.get('author_id')
     
     @staticmethod
     def sluggify(text, separator='-'):
