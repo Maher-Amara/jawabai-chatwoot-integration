@@ -12,7 +12,7 @@ class Chatwoot:
         self.api_access_token = os.environ.get('api_access_token')
         self.account_id = os.environ.get('account_id')
         self.base_url = os.environ.get('base_url')
-        self.portal_id = 'sidraedge'
+        self.portal_id = 'healsane'
         self.author_id = os.environ.get('author_id')
     
     @staticmethod

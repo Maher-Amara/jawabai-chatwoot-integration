@@ -123,5 +123,5 @@ def publish_all():
 
 
 # Replace './docs/mydoc.docx' with the path to your document
-split_and_save_articles('./docs/mydoc.docx')
+split_and_save_articles('./docs/33b14984-52a7-4f9a-9a39-6a1831006acd.docx')
 publish_all()
